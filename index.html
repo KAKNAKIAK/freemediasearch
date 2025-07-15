@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>무료 미디어 검색 V2 - Free Media Search</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            padding: 40px;
+            text-align: center;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .search-section {
+            padding: 40px;
+            background: white;
+        }
+
+        .search-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .search-input-group {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 15px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 50px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #4facfe;
+            box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.1);
+            background: white;
+        }
+
+        .search-btn {
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(79, 172, 254, 0.3);
+        }
+
+        .search-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(79, 172, 254, 0.4);
+        }
+
+        .search-btn:active {
+            transform: translateY(0);
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 30px;
+            justify-content: center;
+            align-items: center;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 15px;
+            border: 2px solid #e0e0e0;
+        }
+
+        .radio-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            padding: 10px 20px;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+        }
+
+        .radio-item:hover {
+            background: rgba(79, 172, 254, 0.1);
+        }
+
+        .radio-item input[type="radio"] {
+            width: 20px;
+            height: 20px;
+            accent-color: #4facfe;
+        }
+
+        .radio-item label {
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .results-section {
+            padding: 0 40px 40px;
+            background: white;
+        }
+
+        .results-container {
+            display: none;
+        }
+
+        .results-title {
+            font-size: 1.8rem;
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .search-info {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .site-results {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .site-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            border: 2px solid #f0f0f0;
+            transition: all 0.3s ease;
+        }
+
+        .site-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            border-color: #4facfe;
+        }
+
+        .site-name {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .search-links {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .search-link {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            text-decoration: none;
+            color: #333;
+            transition: all 0.3s ease;
+            border: 1px solid #e0e0e0;
+            cursor: pointer;
+        }
+
+        .search-link:hover {
+            background: #4facfe;
+            color: white;
+            transform: translateX(5px);
+        }
+
+        .search-link:active {
+            transform: translateX(3px);
+        }
+
+        .search-link .flag {
+            font-size: 18px;
+        }
+
+        .search-link .text {
+            flex: 1;
+            font-weight: 500;
+        }
+
+        .search-link .icon {
+            font-size: 14px;
+            opacity: 0.7;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .loading::after {
+            content: '';
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #4facfe;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-left: 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .footer {
+            background: #333;
+            color: white;
+            text-align: center;
+            padding: 20px;
+            font-size: 14px;
+        }
+
+        .version-info {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 10px;
+            font-size: 12px;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .search-section {
+                padding: 20px;
+            }
+            
+            .search-input-group {
+                flex-direction: column;
+            }
+            
+            .radio-group {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .site-results {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="version-info">V2.0</div>
+            <h1>🎨 무료 미디어 검색</h1>
+            <p>픽사베이, 펙셀스, 커버, 언스플래시, 라이프 오브 비즈에서 한번에 검색하세요!</p>
+        </div>
+
+        <div class="search-section">
+            <div class="search-container">
+                <div class="search-input-group">
+                    <input type="text" id="searchInput" class="search-input" placeholder="검색어를 입력하세요 (예: 사과, 바다, 자연)" />
+                    <button onclick="performSearch()" class="search-btn">🔍 검색</button>
+                </div>
+                
+                <div class="radio-group">
+                    <div class="radio-item">
+                        <input type="radio" id="photos" name="mediaType" value="photos" checked>
+                        <label for="photos">📸 사진</label>
+                    </div>
+                    <div class="radio-item">
+                        <input type="radio" id="videos" name="mediaType" value="videos">
+                        <label for="videos">🎬 동영상</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="results-section">
+            <div id="resultsContainer" class="results-container">
+                <div class="results-title">검색 결과</div>
+                <div id="searchInfo" class="search-info"></div>
+                <div id="siteResults" class="site-results"></div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>© 2025 무료 미디어 검색 V2 - 모든 사이트는 상업적 사용이 가능한 무료 라이센스를 제공합니다.</p>
+        </div>
+    </div>
+
+    <script>
+        // 🔗 링크 열기 함수 (새 탭에서 열기)
+        function openNewTab(url) {
+            try {
+                console.log('새 탭에서 링크 열기:', url);
+                window.open(url, '_blank', 'noopener,noreferrer');
+            } catch (error) {
+                console.log('링크 열기 실패:', error);
+                alert('링크를 열 수 없습니다: ' + url);
+            }
+        }
+
+        // 확장된 한글-영어 번역 사전
+        const translations = {
+            // 기본 단어
+            '사과': 'apple',
+            '바다': 'ocean',
+            '자연': 'nature',
+            '꽃': 'flower',
+            '나무': 'tree',
+            '하늘': 'sky',
+            '구름': 'cloud',
+            '산': 'mountain',
+            '강': 'river',
+            '호수': 'lake',
+            '새': 'bird',
+            '고양이': 'cat',
+            '강아지': 'dog',
+            '개': 'dog',
+            '음식': 'food',
+            '커피': 'coffee',
+            '차': 'tea',
+            '물': 'water',
+            '책': 'book',
+            '자동차': 'car',
+            '집': 'house',
+            '도시': 'city',
+            '마을': 'village',
+            
+            // 사람 관련
+            '사람': 'people',
+            '인간': 'human',
+            '가족': 'family',
+            '아이': 'child',
+            '어린이': 'children',
+            '아기': 'baby',
+            '여자': 'woman',
+            '남자': 'man',
+            '학생': 'student',
+            '선생님': 'teacher',
+            '의사': 'doctor',
+            '간호사': 'nurse',
+            
+            // 도시/지명
+            '서울': 'seoul',
+            '부산': 'busan',
+            '다낭': 'da nang',
+            '멜번': 'melbourne',
+            '시드니': 'sydney',
+            '뉴욕': 'new york',
+            '런던': 'london',
+            '파리': 'paris',
+            '도쿄': 'tokyo',
+            '베이징': 'beijing',
+            '상하이': 'shanghai',
+            '홍콩': 'hong kong',
+            '싱가포르': 'singapore',
+            '방콕': 'bangkok',
+            '하노이': 'hanoi',
+            '호치민': 'ho chi minh',
+            
+            // 교통수단
+            '자동차': 'car',
+            '차': 'car',
+            '택시': 'taxi',
+            '버스': 'bus',
+            '지하철': 'subway',
+            '기차': 'train',
+            '비행기': 'airplane',
+            '배': 'ship',
+            '자전거': 'bicycle',
+            '드라이버': 'driver',
+            '운전자': 'driver',
+            '운전사': 'driver',
+            
+            // 여행/장소
+            '여행': 'travel',
+            '휴가': 'vacation',
+            '해변': 'beach',
+            '공원': 'park',
+            '호텔': 'hotel',
+            '레스토랑': 'restaurant',
+            '카페': 'cafe',
+            '박물관': 'museum',
+            '공항': 'airport',
+            
+            // 랜드마크/건물
+            '다리': 'bridge',
+            '브릿지': 'bridge',
+            '타워': 'tower',
+            '궁전': 'palace',
+            '성': 'castle',
+            '교회': 'church',
+            '사원': 'temple',
+            
+            // 기술/트렌드
+            '컴퓨터': 'computer',
+            '핸드폰': 'phone',
+            '스마트폰': 'smartphone',
+            '인터넷': 'internet',
+            '인공지능': 'artificial intelligence',
+            '프로그래밍': 'programming',
+            '데이터': 'data',
+            '블록체인': 'blockchain',
+            '메타버스': 'metaverse',
+            
+            // 브랜드/소셜미디어
+            '구글': 'google',
+            '애플': 'apple',
+            '삼성': 'samsung',
+            '인스타그램': 'instagram',
+            '유튜브': 'youtube',
+            '페이스북': 'facebook',
+            '틱톡': 'tiktok',
+            
+            // 음식
+            '김치': 'kimchi',
+            '불고기': 'bulgogi',
+            '비빔밥': 'bibimbap',
+            '피자': 'pizza',
+            '햄버거': 'hamburger',
+            '치킨': 'chicken',
+            '스시': 'sushi',
+            '라면': 'ramen',
+            
+            // 스포츠
+            '축구': 'soccer',
+            '야구': 'baseball',
+            '농구': 'basketball',
+            '테니스': 'tennis',
+            '골프': 'golf',
+            '수영': 'swimming',
+            '요가': 'yoga',
+            '운동': 'exercise',
+            
+            // 엔터테인먼트
+            '음악': 'music',
+            '영화': 'movie',
+            '드라마': 'drama',
+            '게임': 'game',
+            '케이팝': 'kpop',
+            
+            // 패션
+            '옷': 'clothes',
+            '신발': 'shoes',
+            '가방': 'bag',
+            '모자': 'hat',
+            '시계': 'watch'
+        };
+
+        // 사이트별 검색 URL 생성
+        const siteConfigs = {
+            'Pixabay': {
+                name: 'Pixabay',
+                photos: (query) => `https://pixabay.com/ko/photos/search/${encodeURIComponent(query)}/`,
+                videos: (query) => `https://pixabay.com/ko/videos/search/${encodeURIComponent(query)}/`,
+                icon: '🎨'
+            },
+            'Pexels': {
+                name: 'Pexels',
+                photos: (query) => `https://www.pexels.com/ko-kr/search/${encodeURIComponent(query)}/`,
+                videos: (query) => `https://www.pexels.com/ko-kr/search/videos/${encodeURIComponent(query)}/`,
+                icon: '📷'
+            },
+            'Coverr': {
+                name: 'Coverr',
+                photos: (query) => `https://coverr.co/search?q=${encodeURIComponent(query)}`,
+                videos: (query) => `https://coverr.co/search?q=${encodeURIComponent(query)}`,
+                icon: '🎬'
+            },
+            'Unsplash': {
+                name: 'Unsplash',
+                photos: (query) => `https://unsplash.com/ko/s/사진/${encodeURIComponent(query)}`,
+                videos: (query) => `https://unsplash.com/ko/s/사진/${encodeURIComponent(query)}`,
+                icon: '🌟'
+            },
+            'Life of Vids': {
+                name: 'Life of Vids',
+                photos: (query) => `https://www.lifeofvids.com/?s=${encodeURIComponent(query)}`,
+                videos: (query) => `https://www.lifeofvids.com/?s=${encodeURIComponent(query)}`,
+                icon: '🎥'
+            }
+        };
+
+        // 번역 함수
+        function translateToEnglish(text) {
+            const hasKorean = /[가-힣]/.test(text);
+            
+            if (!hasKorean) {
+                console.log(`"${text}"는 이미 영어입니다.`);
+                return text;
+            }
+
+            console.log(`번역 시도: "${text}"`);
+            
+            // 전체 매칭
+            if (translations[text.toLowerCase()]) {
+                const result = translations[text.toLowerCase()];
+                console.log(`✅ 전체 매칭: "${text}" → "${result}"`);
+                return result;
+            }
+            
+            // 단어별 매칭
+            const words = text.toLowerCase().trim().split(/\s+/);
+            const translatedWords = words.map(word => {
+                if (translations[word]) {
+                    console.log(`✅ 단어 매칭: "${word}" → "${translations[word]}"`);
+                    return translations[word];
+                }
+                
+                // 부분 매칭
+                for (const [korean, english] of Object.entries(translations)) {
+                    if (word.includes(korean)) {
+                        console.log(`✅ 부분 매칭: "${word}" → "${english}"`);
+                        return english;
+                    }
+                }
+                
+                console.log(`❌ 번역 실패: "${word}"`);
+                return word;
+            });
+            
+            const result = translatedWords.join(' ');
+            console.log(`🎯 최종 결과: "${text}" → "${result}"`);
+            return result;
+        }
+
+        // 검색 실행
+        function performSearch() {
+            const searchInput = document.getElementById('searchInput');
+            const query = searchInput.value.trim();
+            
+            if (!query) {
+                alert('검색어를 입력해주세요!');
+                return;
+            }
+
+            const mediaType = document.querySelector('input[name="mediaType"]:checked').value;
+            const resultsContainer = document.getElementById('resultsContainer');
+            const searchInfo = document.getElementById('searchInfo');
+            const siteResults = document.getElementById('siteResults');
+
+            // 결과 영역 표시
+            resultsContainer.style.display = 'block';
+            
+            // 로딩 표시
+            searchInfo.innerHTML = `
+                <div class="loading">🚀 번역하고 검색 링크를 생성하고 있습니다...</div>
+            `;
+            siteResults.innerHTML = '';
+
+            console.log('=== 번역 과정 시작 ===');
+            
+            // 번역 실행
+            const englishQuery = translateToEnglish(query);
+            
+            setTimeout(() => {
+                // 검색 정보 표시
+                searchInfo.innerHTML = `
+                    <strong>🔍 검색어:</strong> ${query} ${query !== englishQuery ? `→ ${englishQuery}` : ''}<br>
+                    <strong>📁 검색 타입:</strong> ${mediaType === 'photos' ? '📸 사진' : '🎬 동영상'}<br>
+                    <strong>🌐 번역:</strong> ${query === englishQuery ? '번역 불필요 (이미 영어)' : '스마트 사전 번역 → ' + englishQuery}
+                `;
+
+                // 사이트별 결과 생성
+                let resultsHTML = '';
+                
+                Object.entries(siteConfigs).forEach(([key, config]) => {
+                    const koreanLink = config[mediaType](query);
+                    const englishLink = config[mediaType](englishQuery);
+                    
+                    resultsHTML += `
+                        <div class="site-card">
+                            <div class="site-name">${config.icon} ${config.name}</div>
+                            <div class="search-links">
+                                <div class="search-link" onclick="openNewTab('${koreanLink}')" title="새 탭에서 열기">
+                                    <span class="flag">🇰🇷</span>
+                                    <span class="text">${query}</span>
+                                    <span class="icon">↗️</span>
+                                </div>
+                                ${query !== englishQuery ? `
+                                <div class="search-link" onclick="openNewTab('${englishLink}')" title="새 탭에서 열기">
+                                    <span class="flag">🇺🇸</span>
+                                    <span class="text">${englishQuery}</span>
+                                    <span class="icon">↗️</span>
+                                </div>
+                                ` : `
+                                <div class="search-link" onclick="openNewTab('${englishLink}')" title="새 탭에서 열기">
+                                    <span class="flag">🇺🇸</span>
+                                    <span class="text">${englishQuery}</span>
+                                    <span class="icon">↗️</span>
+                                </div>
+                                `}
+                            </div>
+                        </div>
+                    `;
+                });
+
+                siteResults.innerHTML = resultsHTML;
+                console.log('=== 번역 과정 완료 ===');
+                
+            }, 500);
+        }
+
+        // 엔터키 검색
+        document.getElementById('searchInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                performSearch();
+            }
+        });
+
+        // 페이지 로드 시 검색창에 포커스
+        window.addEventListener('load', function() {
+            document.getElementById('searchInput').focus();
+        });
+    </script>
+</body>
+</html>
